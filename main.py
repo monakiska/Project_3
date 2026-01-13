@@ -12,7 +12,6 @@ from bs4 import BeautifulSoup
 
 BASE_URL = "https://www.volby.cz/pls/ps2017nss/"
 
-
 def get_args(argv: list) -> tuple:
     """
     Function parses and validates arguments.
@@ -33,7 +32,6 @@ def get_args(argv: list) -> tuple:
         raise ValueError("Second argument must be a csv file name ending .csv.")
     return first_arg, second_arg
 
-
 def load_page(url: str) -> BeautifulSoup:
     """
     Function downloads a page.
@@ -42,7 +40,6 @@ def load_page(url: str) -> BeautifulSoup:
     """
     response = requests.get(url)
     return BeautifulSoup(response.text, features="html.parser")
-
 
 def to_int(text: str) -> int:
     """
@@ -57,7 +54,6 @@ def to_int(text: str) -> int:
     join_list = "".join(text_to_list)
     number_of_votes = int(join_list)
     return number_of_votes
-
 
 def get_municipalities(url: str) -> list:
     """
@@ -87,7 +83,6 @@ def get_municipalities(url: str) -> list:
         raise ValueError("A list of municipalities is not found on the page.")
     return municipalities
 
-
 def parse_summary(page: BeautifulSoup) -> tuple:
     """
     Function parses and validates summary table. Returns registered voters, envelopes issued and valid votes from a results page.
@@ -109,7 +104,6 @@ def parse_summary(page: BeautifulSoup) -> tuple:
     if len(cells) < 8:
         raise ValueError("Summary table does not have appropriate format.")
     return to_int(cells[3]), to_int(cells[4]), to_int(cells[7])
-
 
 def parse_party_votes(page: BeautifulSoup) -> dict:
     """
@@ -133,7 +127,6 @@ def parse_party_votes(page: BeautifulSoup) -> dict:
         raise ValueError("Voting results not found on municipality page.")
     return party_votes
 
-
 def scrape_municipality(municipality: dict) -> tuple:
     """
     Function downloads and parses one municipality results page. Returns results of functions parse_party_votes() and parse_summary().
@@ -142,7 +135,6 @@ def scrape_municipality(municipality: dict) -> tuple:
     votes = parse_party_votes(page)
     summary = parse_summary(page)
     return votes, summary
-
 
 def scrape_all(municipalities):
     """
@@ -166,7 +158,6 @@ def scrape_all(municipalities):
         rows.append(row)
     return rows, party_names
 
-
 def save_csv(filename: str, rows: list, party_names: list) -> int:
     """
     Function saves rows to csv and returns number of written data rows.
@@ -186,7 +177,6 @@ def save_csv(filename: str, rows: list, party_names: list) -> int:
             writer.writerow({key: row.get(key, 0) for key in header})
     return len(rows)
 
-
 def main():
     try:
         url, output_file = get_args(sys.argv)
@@ -203,7 +193,6 @@ def main():
     except requests.RequestException as error:
         print(f"Downloading ERROR: {error}")
         sys.exit(1)
-
 
 if __name__ == "__main__":
     main()
